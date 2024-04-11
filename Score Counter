@@ -1,0 +1,42 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class ScoreCounter : MonoBehaviour
+{
+    private Transform _transform;
+    private float _lastPositionY;
+    private float _score = 0f; 
+
+    public float ScoreMultiipler;
+    public TMP_Text ScoreText;
+    
+    
+    private void Awake()
+    {
+
+        _transform = GetComponent<Transform>();
+        _lastPositionY = _transform.position.y;
+        ScoreText.text = ((int)_score).ToString();
+        
+    }
+    private void Update()
+    {
+        if (_transform.position.y >_lastPositionY)
+        {
+            _score += (_transform.position.y - _lastPositionY) * ScoreMultiipler;
+            _lastPositionY = _transform.position.y;
+            ScoreText.text = ((int)_score).ToString();
+
+
+
+
+
+
+
+        }
+    }
+
+
+}
