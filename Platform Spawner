@@ -1,0 +1,46 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlatformSpawner : MonoBehaviour
+{
+    public GameObject PlatformFormPreFab;
+    public GameObject BreakingPlatformPreFab;
+    public float BorderSpawnPositionX;
+    public float PlatformDistance;
+    public float breakingPlatformDistance;
+    public float lastBreackingPlatformSpawnY;
+    public int StartPlatformsCount;
+    private Transform _transform;
+    [HideInInspector] public Transform lastPlatformSpawnY;
+    public Vector3 FirstPlatformformSpawnPosition;
+    private void Awake()
+    {
+        _transform = GetComponent<Transform>();
+
+        for ( int i = 0; i< StartPlatformsCount; i ++)
+        {
+            lastPlatformSpawnY = Instantiate(PlatformFormPreFab, new Vector3(Random.Range(-BorderSpawnPositionX, BorderSpawnPositionX),
+            FirstPlatformformSpawnPosition.y + PlatformDistance * i, FirstPlatformformSpawnPosition.z), Quaternion.identity).transform; 
+        }
+    }
+    private void Start()
+    {
+        lastBreackingPlatformSpawnY = _transform.position.y;
+    }
+    private void Update()
+    {
+        if (_transform.position.y>lastPlatformSpawnY.position.y)
+        {
+            lastPlatformSpawnY = Instantiate(PlatformFormPreFab, new Vector3(Random.Range(-BorderSpawnPositionX, BorderSpawnPositionX),
+                lastPlatformSpawnY.position.y + PlatformDistance, lastPlatformSpawnY.position.z), Quaternion.identity).transform;
+        }
+
+        if ((_transform.position.y - lastBreackingPlatformSpawnY) > Random.Range(0, 70))
+        {
+            Instantiate(BreakingPlatformPreFab, new Vector3(Random.Range(-BorderSpawnPositionX, BorderSpawnPositionX),
+                lastBreackingPlatformSpawnY + breakingPlatformDistance, lastPlatformSpawnY.position.z), Quaternion.identity);
+        }
+        lastBreackingPlatformSpawnY = _transform.position.y;
+    }
+}
