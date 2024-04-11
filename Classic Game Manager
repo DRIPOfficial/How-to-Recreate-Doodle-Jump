@@ -1,0 +1,80 @@
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance;
+
+    public GameObject Menu;
+    public Button StartButton;
+    public Button PauseButton;
+    public Button ResumeButton;
+    public Button OpenRefYouTube;
+    public Button ExitButton;
+
+    private bool _isStarted;
+    private string _refToYoutube = "https://sites.google.com/icospedaletto.edu.it/notizie-del-petaro?usp=sharing";
+
+    private void Awake()
+    {
+        Instance = this;
+
+        StartButton.onClick.AddListener(StartGame);
+        PauseButton.onClick.AddListener(PauseGame);
+        ResumeButton.onClick.AddListener(ResumeGame);
+        ExitButton.onClick.AddListener(ExitGame);
+        OpenRefYouTube.onClick.AddListener(OpenURL);
+
+        ResumeButton.interactable = false;
+
+        Menu.SetActive(true);
+        Time.timeScale = 0;
+    }
+    private void OpenURL()
+    {
+        Application.OpenURL(_refToYoutube);
+    }
+
+    private void StartGame()
+    {
+        if (!_isStarted)
+        {
+            _isStarted = true;
+            Menu.SetActive(false);
+            Time.timeScale = 1;
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+
+    private void PauseGame()
+    {
+        Time.timeScale = 0;
+        Menu.SetActive(true);
+        ResumeButton.interactable = true;
+    }
+
+    private void ResumeGame()
+    {
+        Time.timeScale = 1;
+        Menu.SetActive(false);
+    }
+
+    private void ExitGame()
+    {
+        Application.Quit();
+    }
+
+    public bool IsMenyActive()
+    {
+        return Menu.activeSelf;
+    }
+
+    public bool IsTimeFrozen()
+    {
+        return Time.timeScale == 0;
+    }
+}
