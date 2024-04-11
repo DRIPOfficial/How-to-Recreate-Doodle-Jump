@@ -1,0 +1,22 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BreakingPlatform : MonoBehaviour
+{
+    public Animator PlatformAnimator;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            BRPL();
+        }
+    }
+
+    private void BRPL()
+    {
+        PlatformAnimator.SetBool("platformisFalling", true);
+        Destroy(gameObject, PlatformAnimator.GetCurrentAnimatorStateInfo(0).length);
+    }
+}
