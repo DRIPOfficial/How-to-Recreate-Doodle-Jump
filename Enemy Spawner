@@ -1,0 +1,54 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemySpawne : MonoBehaviour
+{
+    public GameObject EnemyPrefab;
+    public float EnemySpawnDistance;
+    public int ProbabilityNumber;
+    public float EnemyBorderPositionX;
+    public PlatformSpawner platformSpawner;
+    public GameObject UFOPrefab;
+    public int ProbabilityNumber2;
+    public float UFOSpawnDistance;
+    
+    private Transform _transform;
+    private float  _lastSpawnEnemyY;
+    private float _lastSpawnUFOPositionY;
+
+    private void Awake()
+    {
+        _transform = GetComponent<Transform>();
+        _lastSpawnEnemyY = _transform.position.y;
+        _lastSpawnUFOPositionY = _transform.position.y;
+        _lastSpawnUFOPositionY = _transform.position.y;       
+    }
+    private void Update()
+    {
+        if (_transform.position.y>_lastSpawnEnemyY + EnemySpawnDistance)
+        {
+            int probability = Random.Range(0, 11);
+            if (probability > ProbabilityNumber)
+            {
+                Instantiate(EnemyPrefab, new Vector3(platformSpawner.lastPlatformSpawnY.position.x, platformSpawner.lastPlatformSpawnY.position.y+0.3f,
+                    platformSpawner.lastPlatformSpawnY.position.z),Quaternion.identity);
+            }
+            _lastSpawnEnemyY = _transform.position.y;
+        }
+
+        if (_transform.position.y > _lastSpawnUFOPositionY + UFOSpawnDistance)
+        {
+            int probability2 = Random.Range(0,5);
+            if(ProbabilityNumber2 > probability2)
+            {
+                Instantiate(UFOPrefab, new Vector3(Random.Range(-EnemyBorderPositionX, EnemyBorderPositionX),
+                    _transform.position.y, _transform.position.z), Quaternion.identity);
+            }
+            _lastSpawnUFOPositionY = _transform.position.y;
+        }
+    }
+           
+
+
+}
