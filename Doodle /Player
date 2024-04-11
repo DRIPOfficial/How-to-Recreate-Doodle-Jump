@@ -1,0 +1,102 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class doodler : MonoBehaviour
+{
+    public float JumpForce;
+    public GameObject Bulliet;
+    public float ShootForce;
+    public float MoveSpeed;
+    public float BorderPositionX;
+    public AudioClip JumpSound;
+    public TMP_Text EndText;
+
+    private Camera _camera;
+    private Rigidbody2D _rigidbody2D;
+    private Transform _transform;
+    private Vector3 _startScale;
+    private AudioSource _audioSource;
+    private float StartJumpForce = 12f;
+
+    public void Awake()
+    {
+        _rigidbody2D = GetComponent<Rigidbody2D>();
+        _transform = GetComponent<Transform>();
+        _startScale = _transform.localScale;
+        _audioSource = GetComponent<AudioSource>();
+        _camera = Camera.main;
+    }
+    private void Start()
+    {
+        _rigidbody2D.AddForce(Vector3.up * StartJumpForce, ForceMode2D.Impulse);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        _rigidbody2D.velocity = Vector3.zero;
+        _rigidbody2D.AddForce(Vector3.up * JumpForce, ForceMode2D.Impulse);
+        _audioSource.PlayOneShot(JumpSound);
+
+        if (collision.gameObject.CompareTag("monster")) 
+        {
+            if (_transform.position.y > collision.collider.transform.position.y)
+            {
+                Destroy(collision.collider.gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
+    }
+    private void Update()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        _transform.Translate(Vector3.right * MoveSpeed * Time.deltaTime * horizontal);
+        if  (horizontal>0)
+        {
+            _transform.localScale = _startScale;
+        }
+        else if (horizontal<0) 
+        {
+            _transform.localScale = new Vector3(-_startScale.x,_startScale.y,_startScale.z);
+        }
+        if (_transform.position.x >BorderPositionX)
+        {
+            _transform.position = new Vector3(-BorderPositionX, _transform.position.y,_transform.position.z);
+        }
+        if (_transform.position.x<-BorderPositionX)
+        {
+            _transform.position = new Vector3(BorderPositionX,_transform.position.y,_transform.position.z);
+        }
+        Shoot();
+    }
+
+    private void OnDestroy()
+    {
+        EndText.text = "Giaca fanata, prama [R] par racamanciara";
+        GameEndManager.Instance.GameEnded = true;
+    }
+
+    private void Shoot ()
+    {
+        if (!IsMenuActive() && !isTimeFrozen() && Input.GetKeyDown (KeyCode.Mouse0))
+        {
+            Vector3 mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
+            Rigidbody2D bullietRB = Instantiate(Bulliet, _transform.position, Quaternion.identity).GetComponent<Rigidbody2D>();
+            Vector3 shootDirection = (mousePosition - _transform.position).normalized;
+            bullietRB.velocity = shootDirection * ShootForce;
+        }
+    }
+    private bool IsMenuActive()
+    {
+        return GameManager.Instance.IsMenyActive();
+    }
+    private bool isTimeFrozen()
+    {
+        return GameManager.Instance.IsTimeFrozen();
+    }
+}
